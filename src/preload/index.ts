@@ -50,8 +50,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return () => ipcRenderer.removeListener('snip-init', handler)
   },
 
-  sendSnipResult: (croppedUrl: string | null) => {
-    ipcRenderer.send('snip-result', croppedUrl)
+  sendSnipResult: (payload: { x: number; y: number; width: number; height: number; unit: '%' } | null) => {
+    ipcRenderer.send('snip-result', payload)
   },
 
   // ── Receive selected text (main → renderer) ───────────────────────────────
