@@ -1,0 +1,80 @@
+/* ── Buddy – Global Design System ─────────────────────────────────────────── */
+
+/* 1. CSS Custom Properties (design tokens) */
+:root {
+  /* Colors */
+  --color-bg:        #0d0d10;
+  --color-surface:   #16161e;
+  --color-surface-2: #1e1e2e;
+  --color-border:    rgba(255, 255, 255, 0.08);
+  --color-accent:    #7c6ef5;
+  --color-accent-2:  #5e9cf5;
+  --color-text:      #e2e2f0;
+  --color-text-dim:  #8888aa;
+  --color-success:   #4ade80;
+  --color-error:     #f87171;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-glow: 0 0 24px rgba(124, 110, 245, 0.25);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 3. Base */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Electron window manages scrolling */
+  /* Transparent by default so frameless windows (e.g. bubble) work.
+     Opaque windows (panel, settings) set their own background. */
+  background: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 4. Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+/* 5. Selection */
+::selection {
+  background: rgba(124, 110, 245, 0.35);
+  color: #fff;
+}
