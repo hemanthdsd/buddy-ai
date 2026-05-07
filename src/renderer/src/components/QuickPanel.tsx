@@ -18,6 +18,7 @@ declare global {
 
 // ─── Quick action modes ───────────────────────────────────────────────────────
 const QUICK_MODES = [
+  { id: 'enhance',      emoji: '🚀', label: 'Enhance'      },
   { id: 'improve',      emoji: '✨', label: 'Improve'      },
   { id: 'grammar',      emoji: '📝', label: 'Fix Grammar'  },
   { id: 'professional', emoji: '💼', label: 'Professional' },

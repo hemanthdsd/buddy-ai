@@ -19,9 +19,10 @@ const SYSTEM_PROMPT =
   'No explanations. No preamble. No "Here is the improved version:" prefix. ' +
   'Just the improved text itself.'
 
-// ── Mode prompts (matches the 7 modes in the UI) ──────────────────────────────
+// ── Mode prompts (matches the modes in the UI) ────────────────────────────────
 export const MODE_PROMPTS: Record<string, string> = {
-  improve:      'Rewrite this as a clear, structured, and effective AI prompt. Keep the original intent.',
+  enhance:      'You are an expert prompt engineer. The user will provide a short idea or draft prompt. Expand it into a highly detailed, comprehensive, and effective AI prompt. Include necessary context, format requirements, and constraints. Output ONLY the new prompt, without any introductions or explanations.',
+  improve:      'Rewrite this text to be clear, structured, and effective. Keep the original intent.',
   grammar:      'Fix all grammar, spelling, and punctuation errors. Keep the original style and meaning exactly.',
   professional: 'Rewrite this in a professional, formal business tone. Maintain the key message.',
   short:        'Make this text shorter and more concise. Remove unnecessary words. Keep the key message.',

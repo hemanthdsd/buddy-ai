@@ -28,7 +28,8 @@ declare global {
 
 // ─── Modes ────────────────────────────────────────────────────────────────────
 const MODES = [
-  { id: 'improve',      label: '✨ Improve Prompt'    },
+  { id: 'enhance',      label: '🚀 Enhance Prompt'    },
+  { id: 'improve',      label: '✨ Improve Text'      },
   { id: 'grammar',      label: '📝 Fix Grammar'       },
   { id: 'professional', label: '💼 Make Professional' },
   { id: 'short',        label: '⚡ Make Short'        },
