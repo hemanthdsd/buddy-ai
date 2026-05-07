@@ -67,8 +67,7 @@
       "out/**/*",
       "resources/**/*",
       "!**/*.map",
-      "!**/*.ts",
-      "!node_modules/**/*"
+      "!**/*.ts"
     ],
     "extraResources": [
       {
