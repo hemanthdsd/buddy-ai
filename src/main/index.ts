@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, ipcMain, Menu, session } from 'electron'
+import { app, BrowserWindow, screen, ipcMain, Menu } from 'electron'
 import { join } from 'path'
 import { createTray } from './services/tray.service'
 import { registerShortcuts, unregisterShortcuts } from './services/shortcut.service'
@@ -64,7 +64,6 @@ function createBubbleWindow(): void {
     bubbleWindow = null
   })
 
-  // Load renderer with ?window=bubble so App.tsx renders the Bubble component
   if (process.env['ELECTRON_RENDERER_URL']) {
     bubbleWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + '?window=bubble')
   } else {
@@ -72,12 +71,6 @@ function createBubbleWindow(): void {
       query: { window: 'bubble' }
     })
   }
-
-  // Show the bubble once the page finishes loading
-  bubbleWindow.webContents.once('did-finish-load', () => {
-    bubbleWindow?.show()
-    bubbleWindow?.setAlwaysOnTop(true, 'floating')
-  })
 }
 
 // ─── IPC: Window dragging ─────────────────────────────────────────────────────
@@ -126,27 +119,7 @@ ipcMain.on('open-panel', () => {
 
 // ─── App lifecycle ────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
-  // Apply persisted settings (startup preference, etc.) first
   initSettings()
-
-  // ── Allow data: and blob: images in all windows ───────────────────────────
-  // The <meta> CSP tag is ignored by Electron for http:// (dev) pages.
-  // Setting it here via session ensures it works in both dev and production.
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': [
-          "default-src 'self'; " +
-          "script-src 'self' 'unsafe-eval'; " +
-          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-          "font-src https://fonts.gstatic.com data:; " +
-          "img-src 'self' data: blob:; " +
-          "connect-src 'self' http://localhost:11434 ws://localhost:*"
-        ]
-      }
-    })
-  })
 
   createBubbleWindow()
 
