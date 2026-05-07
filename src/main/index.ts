@@ -41,10 +41,11 @@ function createBubbleWindow(): void {
     frame: false,
     transparent: true,
     alwaysOnTop: true,
-    skipTaskbar: true,      // Don't show in taskbar — lives in tray instead
+    skipTaskbar: true,
     resizable: false,
     movable: true,
     hasShadow: false,
+    show: false,          // start hidden — show after page loads to avoid white flash
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -55,17 +56,18 @@ function createBubbleWindow(): void {
 
   bubbleWindow.setAlwaysOnTop(true, 'floating')
 
-  // ── Phase 3 key change: hide to tray instead of closing ──────────────────
-  // When the user clicks the X on the window (if it ever appears), we hide
-  // the bubble rather than quitting. The real quit is in the tray menu.
+  // Show bubble once the page has fully loaded (avoids white flash)
+  bubbleWindow.once('ready-to-show', () => {
+    bubbleWindow?.show()
+    bubbleWindow?.setAlwaysOnTop(true, 'floating')
+  })
+
   bubbleWindow.on('close', (event) => {
-    // preventDefault stops Electron from actually destroying the window
     event.preventDefault()
     bubbleWindow?.hide()
   })
 
   bubbleWindow.on('closed', () => {
-    // This fires only when the window is truly destroyed (e.g. app.exit())
     bubbleWindow = null
   })
 
@@ -150,7 +152,7 @@ app.whenReady().then(() => {
   createBubbleWindow()
 
   // ── Phase 3: System tray ──────────────────────────────────────────────────
-  createTray(() => bubbleWindow, () => showPanel(''))
+  createTray(() => bubbleWindow)
 
   // ── Phase 4 + 5: Global shortcut + panel ─────────────────────────────────
   registerPanelIPC()                                       // panel IPC handlers

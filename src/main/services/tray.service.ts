@@ -57,7 +57,7 @@ let tray: Tray | null = null
 // even if the window was recreated after the tray was created.
 type GetBubble = () => BrowserWindow | null
 
-export function createTray(getBubble: GetBubble, openPanel?: () => void): void {
+export function createTray(getBubble: GetBubble): void {
   // ── Load icon ────────────────────────────────────────────────────────────
   const trayIcon = createTrayIcon()
 
@@ -65,19 +65,13 @@ export function createTray(getBubble: GetBubble, openPanel?: () => void): void {
   tray = new Tray(trayIcon)
   tray.setToolTip('Buddy — AI Writing Assistant')
 
-  // Build the menu immediately
-  rebuildMenu(getBubble, openPanel)
+  // Build the menu immediately, then rebuild it whenever "show/hide" is toggled
+  rebuildMenu(getBubble)
 
-  // Single-click: show the bubble
-  tray.on('click', () => {
-    showBubble(getBubble())
-    rebuildMenu(getBubble, openPanel)
-  })
-
-  // Double-click also works (Windows convention)
+  // Double-click the tray icon to show the bubble (Windows convention)
   tray.on('double-click', () => {
     showBubble(getBubble())
-    rebuildMenu(getBubble, openPanel)
+    rebuildMenu(getBubble)
   })
 }
 
@@ -94,7 +88,7 @@ function hideBubble(win: BrowserWindow | null): void {
   win.hide()
 }
 
-function rebuildMenu(getBubble: GetBubble, openPanel?: () => void): void {
+function rebuildMenu(getBubble: GetBubble): void {
   const win = getBubble()
   const isVisible = win?.isVisible() ?? false
 
@@ -102,27 +96,23 @@ function rebuildMenu(getBubble: GetBubble, openPanel?: () => void): void {
     // ── Branding row (non-interactive) ────────────────────────────────────
     {
       label: '✨  Buddy AI',
-      enabled: false
+      enabled: false     // greyed-out title — purely cosmetic
     },
     { type: 'separator' },
 
-    // ── Show bubble ───────────────────────────────────────────────────────
+    // ── Show / Hide toggle ────────────────────────────────────────────────
     {
       label: isVisible ? '🫧  Hide Bubble' : '🫧  Show Bubble',
       click: () => {
         const w = getBubble()
         if (!w) return
-        if (w.isVisible()) { hideBubble(w) } else { showBubble(w) }
-        rebuildMenu(getBubble, openPanel)
-      }
-    },
-
-    // ── Open Panel ────────────────────────────────────────────────────────
-    {
-      label: '🤖  Open Assistant',
-      click: () => {
-        showBubble(getBubble())
-        openPanel?.()
+        if (w.isVisible()) {
+          hideBubble(w)
+        } else {
+          showBubble(w)
+        }
+        // Rebuild so the label flips ("Show" ↔ "Hide")
+        rebuildMenu(getBubble)
       }
     },
 
@@ -131,7 +121,10 @@ function rebuildMenu(getBubble: GetBubble, openPanel?: () => void): void {
     // ── Quit ──────────────────────────────────────────────────────────────
     {
       label: '✕  Quit Buddy',
-      click: () => app.exit(0)
+      click: () => {
+        // Force quit — bypass the 'close' event handler that hides to tray
+        app.exit(0)
+      }
     }
   ])
 
