@@ -116,12 +116,12 @@ const QuickPanel: React.FC = () => {
       const explanation = parts[1]?.trim() || ''
       return (
         <div className={styles.splitOutput}>
-          <div className={styles.solutionPanel}>
+          <div ref={explanation ? null : outputRef} className={styles.solutionPanel}>
             <div className={styles.panelLabel}>Solution</div>
             <pre className={styles.outputText}>{solution}</pre>
           </div>
           {explanation && (
-            <div className={styles.explanationPanel}>
+            <div ref={outputRef} className={styles.explanationPanel}>
               <div className={styles.panelLabel}>Explanation</div>
               <pre className={styles.outputText}>{explanation}</pre>
             </div>
@@ -129,7 +129,11 @@ const QuickPanel: React.FC = () => {
         </div>
       )
     }
-    return <pre className={styles.outputText}>{text.replace('SOLUTION:', '').trim()}</pre>
+    return (
+      <div ref={outputRef} className={styles.output}>
+        <pre className={styles.outputText}>{text.replace('SOLUTION:', '').trim()}</pre>
+      </div>
+    )
   }
 
   return (
@@ -179,16 +183,16 @@ const QuickPanel: React.FC = () => {
         {/* ── Output area ────────────────────────────────────────── */}
         {(isLoading || outputText) && (
           <div className={styles.outputSection}>
-            <div ref={outputRef} className={styles.output}>
-              {isLoading && !outputText ? (
+            {isLoading && !outputText ? (
+              <div className={styles.output}>
                 <div className={styles.loadingRow}>
                   <span className={styles.spinner} />
                   <span>Thinking…</span>
                 </div>
-              ) : (
-                renderOutput(outputText)
-              )}
-            </div>
+              </div>
+            ) : (
+              renderOutput(outputText)
+            )}
 
             {/* Action buttons */}
             {outputText && !isLoading && (
