@@ -75,9 +75,17 @@ const AssistantPanel: React.FC = () => {
       setModel(s.model)
       setVisionModel(s.visionModel)
       setStartWithWindows(s.startWithWindows)
+      isFirstMount.current = false   // now auto-save can fire
     })
     window.electronAPI.getInstalledModels().then(setInstalledModels).catch(() => setInstalledModels([]))
   }, [])
+
+  // ── Auto-save model whenever it changes (no need to press Save) ───────────
+  const isFirstMount = useRef(true)
+  useEffect(() => {
+    if (isFirstMount.current) return  // skip the initial load
+    window.electronAPI.saveSettings({ model, visionModel, startWithWindows })
+  }, [model, visionModel])
 
   // ── Check Ollama on mount + every 30 s ───────────────────────────────────
   useEffect(() => {
@@ -289,7 +297,12 @@ const AssistantPanel: React.FC = () => {
               <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="white" fillOpacity="0.9"/>
             </svg>
           </div>
-          <span className={styles.title}>Buddy AI</span>
+          <div className={styles.titleGroup}>
+            <span className={styles.title}>Buddy AI</span>
+            <span className={styles.activeModel} title={screenshot ? `Vision: ${visionModel}` : `Text: ${model}`}>
+              {screenshot ? visionModel : model}
+            </span>
+          </div>
         </div>
         <div className={styles.headerRight}>
           <span className={`${styles.ollamaStatus} ${ollamaOk === true ? styles.ollamaOk : ollamaOk === false ? styles.ollamaOff : ''}`}>
@@ -316,30 +329,36 @@ const AssistantPanel: React.FC = () => {
 
             <div className={styles.settingsRow}>
               <span className={styles.settingsLabel}>Text model</span>
-              <select
-                className={styles.modelInput}
-                value={model}
-                onChange={e => setModel(e.target.value)}
-              >
-                {!installedModels.includes(model) && <option value={model}>{model}</option>}
-                {installedModels.map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+              <div className={styles.selectWrapper}>
+                <select
+                  className={styles.modelSelect}
+                  value={model}
+                  onChange={e => setModel(e.target.value)}
+                >
+                  {!installedModels.includes(model) && <option value={model}>{model}</option>}
+                  {installedModels.map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+                <span className={styles.selectArrow}>&#9660;</span>
+              </div>
             </div>
 
             <div className={styles.settingsRow}>
               <span className={styles.settingsLabel}>Vision model</span>
-              <select
-                className={styles.modelInput}
-                value={visionModel}
-                onChange={e => setVisionModel(e.target.value)}
-              >
-                {!installedModels.includes(visionModel) && <option value={visionModel}>{visionModel}</option>}
-                {installedModels.map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+              <div className={styles.selectWrapper}>
+                <select
+                  className={styles.modelSelect}
+                  value={visionModel}
+                  onChange={e => setVisionModel(e.target.value)}
+                >
+                  {!installedModels.includes(visionModel) && <option value={visionModel}>{visionModel}</option>}
+                  {installedModels.map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+                <span className={styles.selectArrow}>&#9660;</span>
+              </div>
             </div>
 
             <div className={styles.settingsRow}>
