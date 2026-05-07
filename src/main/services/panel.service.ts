@@ -8,6 +8,7 @@ import {
 } from './ollama.service'
 import { replaceWithResult } from './replace.service'
 import { getSettings, saveSettings } from './settings.service'
+import { openSnipWindow } from './snip.service'
 
 // ─── Panel Service ────────────────────────────────────────────────────────────
 // Manages the floating AssistantPanel window.
@@ -122,8 +123,15 @@ export function registerPanelIPC(): void {
         thumbnailSize: { width, height }
       })
       const dataUrl = sources[0]?.thumbnail.toDataURL() ?? null
-      console.log('[Buddy] Screen captured:', dataUrl ? 'success' : 'no source')
-      return dataUrl
+      
+      if (!dataUrl) {
+        console.log('[Buddy] Screen captured: no source')
+        return null
+      }
+
+      console.log('[Buddy] Screen captured. Opening snip window...')
+      const croppedUrl = await openSnipWindow(dataUrl)
+      return croppedUrl
     } catch (err) {
       console.error('[Buddy] Screen capture failed:', err)
       return null

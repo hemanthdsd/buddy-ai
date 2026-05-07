@@ -3,6 +3,7 @@ import Bubble from './components/Bubble'
 import AssistantPanel from './components/AssistantPanel'
 import SelectionIcon from './components/SelectionIcon'
 import QuickPanel from './components/QuickPanel'
+import SnipWindow from './components/SnipWindow'
 
 // ─── Window router ────────────────────────────────────────────────────────────
 // Reads ?window= from the URL to decide which component to render.
@@ -29,6 +30,9 @@ const App: React.FC = () => {
 
     case 'quickpanel':
       return <QuickPanel />
+
+    case 'snip':
+      return <SnipWindow />
 
     default:
       return (

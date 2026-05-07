@@ -41,6 +41,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   captureScreen: (): Promise<string | null> =>
     ipcRenderer.invoke('capture-screen'),
 
+  // ── Snip Window IPC ───────────────────────────────────────────────────────
+  onSnipInit: (
+    callback: (payload: { image: string }) => void
+  ): (() => void) => {
+    const handler = (_e: Electron.IpcRendererEvent, payload: { image: string }) => callback(payload)
+    ipcRenderer.on('snip-init', handler)
+    return () => ipcRenderer.removeListener('snip-init', handler)
+  },
+
+  sendSnipResult: (croppedUrl: string | null) => {
+    ipcRenderer.send('snip-result', croppedUrl)
+  },
+
   // ── Receive selected text (main → renderer) ───────────────────────────────
   // Used by Bubble to show the green badge.
   onSelectedText: (
