@@ -105,12 +105,11 @@
 .ollamaOk  { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.25); color: #34d399; }
 .ollamaOff { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.25); color: #f87171; }
 
-/* Model input */
 .modelInput {
   width: 100%;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  padding: 7px 30px 7px 10px;
+  background: rgba(14, 14, 20, 0.85);
+  border: 1px solid rgba(124, 110, 245, 0.25);
   border-radius: 10px;
   color: #e2e2f0;
   font-family: inherit;
@@ -118,9 +117,19 @@
   outline: none;
   transition: border-color 150ms;
   box-sizing: border-box;
+  cursor: pointer;
+  /* Custom arrow for select */
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238888aa'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
 }
-.modelInput:focus { border-color: rgba(124,110,245,0.45); }
-.modelInput::placeholder { color: #555570; }
+.modelInput:focus { border-color: rgba(124,110,245,0.55); }
+.modelInput option {
+  background: #0e0e14;
+  color: #e2e2f0;
+}
 
 /* Small helper text under model picker */
 .modelHint {
@@ -193,17 +202,78 @@
 .textarea:focus { border-color: rgba(124,110,245,0.45); }
 .textarea::placeholder { color: #555570; }
 
-/* ── Screenshot ──────────────────────────────────────────────────────────── */
-.screenshotWrap {
-  border-radius: 10px;
+/* ── Screenshot preview ───────────────────────────────────────────────────── */
+.screenshotPreviewBox {
+  border: 1px solid rgba(124, 110, 245, 0.2);
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.screenshotPreviewLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8888aa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(124, 110, 245, 0.07);
+  border-bottom: 1px solid rgba(124, 110, 245, 0.14);
+}
+
+.recropBtn {
+  background: rgba(124, 110, 245, 0.12);
+  border: 1px solid rgba(124, 110, 245, 0.3);
+  border-radius: 20px;
+  color: #a89ef8;
+  font-size: 11px;
+  padding: 2px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 150ms;
+}
+.recropBtn:hover:not(:disabled) { background: rgba(124, 110, 245, 0.25); }
+.recropBtn:disabled { opacity: 0.4; cursor: default; }
+
+.screenshotWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  max-height: 340px;
+  overflow: auto;
 }
 .screenshot {
-  width: 100%;
+  max-width: 100%;
+  max-height: 340px;
   display: block;
-  border-radius: 10px;
+  object-fit: contain;
 }
+
+/* ── Analyze button ───────────────────────────────────────────────────────── */
+.analyzeBtn {
+  width: 100%;
+  padding: 9px;
+  background: linear-gradient(135deg, rgba(124, 110, 245, 0.2), rgba(94, 156, 245, 0.15));
+  border: 1px solid rgba(124, 110, 245, 0.45);
+  border-radius: 10px;
+  color: #c4b8ff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, transform 100ms;
+  font-family: inherit;
+}
+.analyzeBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(124, 110, 245, 0.35), rgba(94, 156, 245, 0.25));
+  border-color: rgba(124, 110, 245, 0.65);
+}
+.analyzeBtn:active:not(:disabled) { transform: scale(0.98); }
+.analyzeBtn:disabled { opacity: 0.55; cursor: default; }
+
 
 .clearBtn {
   background: none;

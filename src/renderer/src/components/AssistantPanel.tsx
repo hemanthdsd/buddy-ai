@@ -124,8 +124,9 @@ const AssistantPanel: React.FC = () => {
   }, [])
 
   // ── Run AI ────────────────────────────────────────────────────────────────
-  const runMode = useCallback((modeId: string) => {
-    if (!inputText.trim() && !screenshot) {
+  const runMode = useCallback((modeId: string, imageOverride?: string) => {
+    // Need either text or screenshot; question is optional for vision
+    if (!inputText.trim() && !screenshot && !imageOverride) {
       setStatus('error')
       setTimeout(() => setStatus('idle'), 2500)
       return
@@ -136,8 +137,9 @@ const AssistantPanel: React.FC = () => {
     setOutputText('')
     setReplaceMsg(null)
 
-    if (screenshot) {
-      window.electronAPI.analyzeScreen(screenshot, question, visionModel)
+    const img = imageOverride ?? screenshot
+    if (img) {
+      window.electronAPI.analyzeScreen(img, question, visionModel)
     } else {
       window.electronAPI.processText(inputText, modeId, model)
     }
@@ -206,9 +208,10 @@ const AssistantPanel: React.FC = () => {
         setInputText('')
         setOutputText('')
         setQuestion('')
+        setReplaceMsg(null)
         setStatus('idle')
-        
-        // Auto-trigger analysis since the image is now exactly what they cropped
+
+        // Auto-analyze immediately using the fresh dataUrl (avoids stale state closure)
         setSelectedMode('vision')
         setIsLoading(true)
         window.electronAPI.analyzeScreen(dataUrl, '', visionModel)
@@ -220,7 +223,7 @@ const AssistantPanel: React.FC = () => {
       setStatus('error')
       setTimeout(() => setStatus('idle'), 2500)
     }
-  }, [])
+  }, [visionModel])
 
   // ── Clear screenshot ──────────────────────────────────────────────────────
   const handleClearScreenshot = useCallback(() => {
@@ -375,25 +378,35 @@ const AssistantPanel: React.FC = () => {
 
           {screenshot ? (
             <>
-              <div className={styles.screenshotWrap}>
-                <img src={screenshot} alt="Screen capture" className={styles.screenshot} />
+              {/* ── "What the model sees" preview ── */}
+              <div className={styles.screenshotPreviewBox}>
+                <div className={styles.screenshotPreviewLabel}>
+                  <span>🔍 What the model sees</span>
+                  <button className={styles.recropBtn} onClick={handleCaptureScreen} disabled={isLoading}>
+                    ✂ Re-crop
+                  </button>
+                </div>
+                <div className={styles.screenshotWrap}>
+                  <img src={screenshot} alt="Cropped region" className={styles.screenshot} />
+                </div>
               </div>
+              {/* ── Follow-up question ── */}
               <div className={styles.chatInputRow}>
                 <textarea
                   className={styles.textarea}
                   value={question}
                   onChange={e => setQuestion(e.target.value)}
-                  placeholder="Reply or ask a question about this screenshot…"
+                  placeholder="Ask a follow-up question, or click Analyze to solve what's shown…"
                   rows={2}
                   spellCheck={false}
                 />
                 <button
-                  className={`${styles.captureBtn} ${styles.sendBtn}`}
+                  className={`${styles.analyzeBtn}`}
                   onClick={() => runMode('vision')}
-                  disabled={isLoading || !question.trim()}
+                  disabled={isLoading}
                   style={{ marginTop: '8px' }}
                 >
-                  Send
+                  {isLoading ? '⏳ Analyzing…' : '🔍 Analyze'}
                 </button>
               </div>
             </>
