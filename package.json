@@ -1,9 +1,13 @@
 {
-  "name": "prompt-enhancer",
-  "version": "1.0.0",
-  "description": "Floating AI writing assistant - Buddy",
+  "name": "buddy-ai",
+  "version": "1.2.0",
+  "description": "Buddy AI — Local-first floating AI writing & vision assistant for Windows",
   "main": "out/main/index.js",
   "homepage": "./",
+  "author": {
+    "name": "Buddy AI",
+    "email": "hemanth@buddyai.app"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
@@ -30,25 +34,49 @@
     "vite": "^5.2.11"
   },
   "build": {
-    "appId": "com.buddy.promptenhancer",
-    "productName": "Buddy",
+    "appId": "com.buddyai.app",
+    "productName": "Buddy AI",
+    "copyright": "Copyright © 2025 Buddy AI",
     "directories": {
       "output": "release"
     },
     "win": {
-      "target": "nsis",
-      "icon": "resources/icon.png"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "resources/icon.png",
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Buddy AI"
+      "shortcutName": "Buddy AI",
+      "installerIcon": "resources/icon.png",
+      "uninstallerIcon": "resources/icon.png",
+      "installerHeaderIcon": "resources/icon.png",
+      "deleteAppDataOnUninstall": false
     },
     "files": [
       "out/**/*",
-      "resources/**/*"
-    ]
+      "resources/**/*",
+      "!**/*.map",
+      "!**/*.ts",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/",
+        "to": "resources/",
+        "filter": ["**/*"]
+      }
+    ],
+    "publish": null
   }
 }
