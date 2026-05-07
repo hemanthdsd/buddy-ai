@@ -13,6 +13,7 @@ interface ElectronAPI {
   captureScreen: () => Promise<string | null>
   onPanelInit: (cb: (p: { text: string }) => void) => () => void
   checkOllama: () => Promise<boolean>
+  getInstalledModels: () => Promise<string[]>
   processText: (text: string, modeId: string, model: string) => void
   analyzeScreen: (imageDataUrl: string, question: string, model: string) => void
   onAiChunk: (cb: (p: { token: string; done: boolean }) => void) => () => void
@@ -62,6 +63,7 @@ const AssistantPanel: React.FC = () => {
   const [startWithWindows, setStartWithWindows] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [settingsSaved, setSettingsSaved] = useState(false)
+  const [installedModels, setInstalledModels] = useState<string[]>([])
 
   const outputRef  = useRef<HTMLDivElement>(null)
   // Track current mode for Retry
@@ -74,6 +76,7 @@ const AssistantPanel: React.FC = () => {
       setVisionModel(s.visionModel)
       setStartWithWindows(s.startWithWindows)
     })
+    window.electronAPI.getInstalledModels().then(setInstalledModels).catch(() => setInstalledModels([]))
   }, [])
 
   // ── Check Ollama on mount + every 30 s ───────────────────────────────────
@@ -310,24 +313,30 @@ const AssistantPanel: React.FC = () => {
 
             <div className={styles.settingsRow}>
               <span className={styles.settingsLabel}>Text model</span>
-              <input
+              <select
                 className={styles.modelInput}
                 value={model}
                 onChange={e => setModel(e.target.value)}
-                placeholder="e.g. qwen2.5:3b"
-                spellCheck={false}
-              />
+              >
+                {!installedModels.includes(model) && <option value={model}>{model}</option>}
+                {installedModels.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
             </div>
 
             <div className={styles.settingsRow}>
               <span className={styles.settingsLabel}>Vision model</span>
-              <input
+              <select
                 className={styles.modelInput}
                 value={visionModel}
                 onChange={e => setVisionModel(e.target.value)}
-                placeholder="e.g. llava"
-                spellCheck={false}
-              />
+              >
+                {!installedModels.includes(visionModel) && <option value={visionModel}>{visionModel}</option>}
+                {installedModels.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
             </div>
 
             <div className={styles.settingsRow}>

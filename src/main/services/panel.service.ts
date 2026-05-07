@@ -3,7 +3,8 @@ import { join } from 'path'
 import {
   streamTextProcess,
   streamScreenAnalysis,
-  isOllamaRunning
+  isOllamaRunning,
+  getInstalledModels
 } from './ollama.service'
 import { replaceWithResult } from './replace.service'
 import { getSettings, saveSettings } from './settings.service'
@@ -136,6 +137,11 @@ export function registerPanelIPC(): void {
     const running = await isOllamaRunning()
     console.log('[Buddy] Ollama running:', running)
     return running
+  })
+
+  // ── Ollama: get installed models ────────────────────────────────────────────
+  ipcMain.handle('get-installed-models', async () => {
+    return await getInstalledModels()
   })
 
   // ── Ollama: process text ────────────────────────────────────────────────────

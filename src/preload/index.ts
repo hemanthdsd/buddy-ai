@@ -68,6 +68,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Check if Ollama server is reachable
   checkOllama: (): Promise<boolean> => ipcRenderer.invoke('check-ollama'),
 
+  // Get list of installed Ollama models
+  getInstalledModels: (): Promise<string[]> => ipcRenderer.invoke('get-installed-models'),
+
   // Start a streaming text-processing job (fire-and-forget; results come via onAiChunk)
   processText: (text: string, modeId: string, model: string): void => {
     ipcRenderer.send('process-text', { text, modeId, model })

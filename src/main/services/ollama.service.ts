@@ -42,6 +42,16 @@ export async function isOllamaRunning(): Promise<boolean> {
   }
 }
 
+// ─── Get installed models ───────────────────────────────────────────────────
+export async function getInstalledModels(): Promise<string[]> {
+  try {
+    const res = await axios.get(`${OLLAMA_BASE}/api/tags`, { timeout: 2000 })
+    return res.data.models.map((m: any) => m.name)
+  } catch {
+    return []
+  }
+}
+
 // ─── Get list of available models ────────────────────────────────────────────
 export async function getAvailableModels(): Promise<string[]> {
   try {
