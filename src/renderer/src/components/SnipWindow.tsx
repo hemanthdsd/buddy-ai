@@ -25,11 +25,19 @@ const SnipWindow: React.FC = () => {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') window.electronAPI.sendSnipResult(null)
-      if (e.key === 'Enter') handleComplete()
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+        window.electronAPI.sendSnipResult(null)
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        handleComplete()
+      }
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    // useCapture: true — intercepts before ReactCrop can consume it
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
   }, [handleComplete])
 
   if (!image) return null

@@ -9,7 +9,6 @@ import {
 import { replaceWithResult } from './replace.service'
 import { getSettings, saveSettings } from './settings.service'
 import { openSnipWindow } from './snip.service'
-import { readFileSync } from 'fs'
 
 // ─── Panel Service ────────────────────────────────────────────────────────────
 // Manages the floating AssistantPanel window.
@@ -167,31 +166,12 @@ export function registerPanelIPC(): void {
     })
   })
 
-  // ── Ollama: analyze screen ─────────────────────────────────────────────────
-  // Payload: { imageDataUrl, question, model }
-  // Same streaming pattern as process-text.
+  // ── Ollama: analyze screen ─────────────────────────────────────────────────────
   ipcMain.on('analyze-screen', (_event, payload: { imageDataUrl: string; question: string; model: string }) => {
     const win = panelWindow
     if (!win) return
-
-    let imageDataUrl = payload.imageDataUrl
-
-    // If the renderer sent a file:// URL (from snip temp file), read it back as base64
-    if (imageDataUrl.startsWith('file:///')) {
-      try {
-        const filePath = decodeURIComponent(imageDataUrl.replace('file:///', '').replace(/\//g, '\\'))
-        const pngBuffer = readFileSync(filePath)
-        imageDataUrl = 'data:image/png;base64,' + pngBuffer.toString('base64')
-        console.log(`[Buddy] Read crop from file, base64 length: ${imageDataUrl.length}`)
-      } catch (err) {
-        console.error('[Buddy] Failed to read crop file:', err)
-        win.webContents.send('ai-error', { message: 'Failed to read cropped image' })
-        return
-      }
-    }
-
-    console.log(`[Buddy] Analyzing screen — model: ${payload.model}`)
-    streamScreenAnalysis(win, imageDataUrl, payload.question, payload.model).catch(err => {
+    console.log(`[Buddy] Analyzing screen — model: ${payload.model}, image length: ${payload.imageDataUrl?.length}`)
+    streamScreenAnalysis(win, payload.imageDataUrl, payload.question, payload.model).catch(err => {
       console.error('[Buddy] streamScreenAnalysis threw:', err)
       win.webContents.send('ai-error', { message: String(err) })
     })

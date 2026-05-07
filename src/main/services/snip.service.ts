@@ -1,6 +1,5 @@
-import { BrowserWindow, screen, ipcMain, nativeImage, app } from 'electron'
+import { BrowserWindow, screen, ipcMain, nativeImage } from 'electron'
 import { join } from 'path'
-import { writeFileSync } from 'fs'
 
 interface PercentCrop {
   x: number
@@ -90,25 +89,19 @@ export function openSnipWindow(dataUrl: string): Promise<string | null> {
         }
 
         const cropped = img.crop(cropBounds)
+        const croppedDataUrl = cropped.toDataURL()
 
-        // Write to a temp PNG — avoids data: URL CSP issues in the renderer
-        const tmpPath = join(app.getPath('temp'), 'buddy-snap.png')
-        writeFileSync(tmpPath, cropped.toPNG())
+        if (!croppedDataUrl || croppedDataUrl === 'data:,') {
+          console.warn('[Buddy/Snip] Crop produced empty data URL — falling back to full image')
+          resolve(dataUrl)
+          return
+        }
 
-        // Return as file:// URL so the <img> tag can load it natively
-        const fileUrl = 'file:///' + tmpPath.replace(/\\/g, '/')
-        console.log('[Buddy/Snip] Saved crop to', tmpPath, '— size:', cropped.getSize())
-        resolve(fileUrl)
+        console.log('[Buddy/Snip] Crop success — data URL length:', croppedDataUrl.length)
+        resolve(croppedDataUrl)
       } catch (err) {
         console.error('[Buddy/Snip] nativeImage.crop() failed:', err)
-        // Fallback: save the full image so at least something shows
-        const tmpPath = join(app.getPath('temp'), 'buddy-snap.png')
-        try {
-          writeFileSync(tmpPath, nativeImage.createFromDataURL(dataUrl).toPNG())
-          resolve('file:///' + tmpPath.replace(/\\/g, '/'))
-        } catch {
-          resolve(null)
-        }
+        resolve(dataUrl) // fallback to full image
       }
     }
 
