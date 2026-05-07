@@ -1,0 +1,77 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+  cursor: crosshair;
+}
+
+.overlay {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.toolbar {
+  background: rgba(14, 14, 20, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.instruction {
+  color: #e2e2f0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn {
+  background: rgba(124, 110, 245, 0.2);
+  border: 1px solid rgba(124, 110, 245, 0.5);
+  color: #c4b8ff;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: rgba(124, 110, 245, 0.4);
+}
+
+.cropWrapper {
+  width: 100vw;
+  height: 100vh;
+}
+
+.desktopImage {
+  width: 100vw;
+  height: 100vh;
+  object-fit: fill; /* fill to exact screen dimensions */
+  display: block;
+}
+
+/* Add custom overlay dimming to react-image-crop */
+:global(.ReactCrop__image) {
+  /* No opacity change here, we dim using pseudo element if needed */
+}
+
+/* Workaround to dim the unselected area since ReactCrop v10 doesn't natively dim the image, it uses crop outlines */
+:global(.ReactCrop) {
+  background: transparent;
+}
