@@ -225,6 +225,14 @@ async function streamRequest(
         `❌ Model not found.\n\n` +
         `Fix: Open a terminal and run:\n  ollama pull ${body.model}\n\n` +
         `Then try again.`
+    } else if (error.response?.data && typeof error.response.data.read === 'function') {
+      try {
+        const errChunk = error.response.data.read()
+        const errStr = errChunk ? errChunk.toString() : ''
+        message = `❌ Error: ${error.message} - ${errStr}`
+      } catch {
+        message = `❌ Error: ${error.message}`
+      }
     } else {
       message = `❌ Error: ${error.response?.data?.error ?? error.message ?? 'Unknown error'}`
     }
