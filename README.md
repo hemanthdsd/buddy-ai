@@ -88,15 +88,110 @@ ollama pull minicpm-v   # recommended for reading code/text from screen
 
 ---
 
-## 🏗️ Build from Source
+## 🏗️ Building the Windows Installer (.exe)
+
+### Prerequisites
+
+Make sure you have the following installed before building:
+
+| Tool | Version | Download |
+|------|---------|----------|
+| **Node.js** | 18 or higher | [nodejs.org](https://nodejs.org) |
+| **npm** | comes with Node.js | — |
+| **Git** | any recent | [git-scm.com](https://git-scm.com) |
+
+> Ollama is only needed at **runtime** (to use the app), not at build time.
+
+---
+
+### Step 1 — Clone the repo
 
 ```bash
-# Development
-npm run dev
+git clone https://github.com/hemanthdsd/buddy-ai.git
+cd buddy-ai
+```
 
-# Production installer (outputs to /release)
+---
+
+### Step 2 — Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### Step 3 — Ensure the icon file exists
+
+The Windows installer requires a `.ico` file. If `resources/icon.ico` is missing, generate it from the PNG using PowerShell:
+
+```powershell
+Add-Type -AssemblyName System.Drawing
+$png = [System.Drawing.Image]::FromFile("$PWD\resources\icon.png")
+$ms  = New-Object System.IO.MemoryStream
+$bmp = New-Object System.Drawing.Bitmap($png, 256, 256)
+$bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
+$ms.Position = 0
+$bytes = $ms.ToArray()
+$fs = [System.IO.File]::Open("$PWD\resources\icon.ico", "Create")
+$bw = New-Object System.IO.BinaryWriter($fs)
+$bw.Write([uint16]0); $bw.Write([uint16]1); $bw.Write([uint16]1)
+$bw.Write([byte]0);   $bw.Write([byte]0);   $bw.Write([byte]0); $bw.Write([byte]0)
+$bw.Write([uint16]1); $bw.Write([uint16]32)
+$bw.Write([uint32]$bytes.Length); $bw.Write([uint32]22)
+$bw.Write($bytes); $bw.Close(); $fs.Close()
+Write-Host "icon.ico created successfully"
+```
+
+---
+
+### Step 4 — Build the installer
+
+```bash
 npm run dist
 ```
+
+This runs two steps automatically:
+1. `electron-vite build` — compiles TypeScript + React into `out/`
+2. `electron-builder` — packages everything into a Windows NSIS installer
+
+**Output:** `release/Buddy AI Setup 1.2.0.exe` (~75 MB)
+
+---
+
+### Step 5 — Install & run
+
+1. Double-click `release\Buddy AI Setup 1.2.0.exe`
+2. Choose install location (default: `C:\Users\<you>\AppData\Local\Programs\Buddy AI`)
+3. Launch **Buddy AI** from the Desktop or Start Menu shortcut
+4. Make sure **Ollama** is running (`ollama serve`) before using the app
+
+---
+
+### Other build commands
+
+```bash
+# Run in development mode (hot reload)
+npm run dev
+
+# Build JS/CSS only (no installer)
+npm run build
+
+# Package into a folder without creating an installer
+npm run pack
+```
+
+---
+
+### Troubleshooting builds
+
+| Error | Fix |
+|-------|-----|
+| `Error while loading icon: invalid icon file` | Run the PowerShell script in Step 3 to generate `icon.ico` |
+| `Cannot find module 'axios'` | Run `npm install`, then `npm run dist` again |
+| `Could not register CommandOrControl+Shift+E` | Another Buddy instance is running — kill it first |
+| Blank/white bubble on startup | Wait 2–3 seconds for Vite dev server to load; normal in dev mode only |
+| Screen capture shows full screen | Draw a crop region in the snip overlay before pressing Enter |
 
 ---
 
