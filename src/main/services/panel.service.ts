@@ -22,11 +22,11 @@ function createPanelWindow(): BrowserWindow {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
 
   panelWindow = new BrowserWindow({
-    width: 440,
-    height: 620,
+    width: 520,
+    height: 760,
     // Center of screen
-    x: Math.round(width / 2 - 220),
-    y: Math.round(height / 2 - 310),
+    x: Math.round(width / 2 - 260),
+    y: Math.round(height / 2 - 380),
     frame: false,
     transparent: true,
     alwaysOnTop: true,

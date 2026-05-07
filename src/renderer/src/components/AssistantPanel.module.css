@@ -2,8 +2,8 @@
 
 /* ── Panel shell ─────────────────────────────────────────────────────────── */
 .panel {
-  width: 440px;
-  max-height: 620px;
+  width: 520px;
+  max-height: 760px;
   overflow: hidden;
   display: flex;
   flex-direction: column;

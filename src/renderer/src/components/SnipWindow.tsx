@@ -15,58 +15,46 @@ const SnipWindow: React.FC = () => {
   }, [])
 
   const handleComplete = useCallback(() => {
-    if (!image) {
-      window.electronAPI.sendSnipResult(null)
-      return
-    }
-
-    // If no crop drawn, send null to cancel (not the full image)
+    if (!image) { window.electronAPI.sendSnipResult(null); return }
     if (!pctCrop || !pctCrop.width || !pctCrop.height) {
       window.electronAPI.sendSnipResult(null)
       return
     }
-
-    // Send ONLY percent coords — the main process will use nativeImage.crop()
-    // which is DPI-safe and doesn't require canvas operations
     window.electronAPI.sendSnipResult(pctCrop)
   }, [image, pctCrop])
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      window.electronAPI.sendSnipResult(null)
-    } else if (e.key === 'Enter') {
-      handleComplete()
-    }
-  }, [handleComplete])
-
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') window.electronAPI.sendSnipResult(null)
+      if (e.key === 'Enter') handleComplete()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [handleComplete])
 
   if (!image) return null
 
   return (
     <div className={styles.container}>
-      <div className={styles.overlay}>
-        <div className={styles.toolbar}>
-          <span className={styles.instruction}>
-            Draw a box around the area you want the AI to read (Enter to confirm, Esc to cancel)
-          </span>
-          <button className={styles.btn} onClick={handleComplete}>✓ Confirm</button>
-        </div>
+      {/* Minimal floating hint — top center */}
+      <div className={styles.hint}>
+        <span>Drag to select area</span>
+        <span className={styles.hintSep}>·</span>
+        <kbd>Enter</kbd> <span>confirm</span>
+        <span className={styles.hintSep}>·</span>
+        <kbd>Esc</kbd> <span>cancel</span>
+        {pctCrop?.width && pctCrop?.height && (
+          <button className={styles.confirmBtn} onClick={handleComplete}>✓ Confirm</button>
+        )}
       </div>
+
       <ReactCrop
         crop={crop}
         onChange={(c, pc) => { setCrop(c); setPctCrop(pc) }}
         onComplete={(_c, pc) => setPctCrop(pc)}
         className={styles.cropWrapper}
       >
-        <img
-          src={image}
-          alt="Desktop"
-          className={styles.desktopImage}
-        />
+        <img src={image} alt="" className={styles.desktopImage} />
       </ReactCrop>
     </div>
   )

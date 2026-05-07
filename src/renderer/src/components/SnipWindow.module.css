@@ -3,75 +3,80 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
-  background: transparent;
   cursor: crosshair;
+  background: transparent;
 }
 
-.overlay {
+/* ── Minimal floating hint bar ───────────────────────────────────────────── */
+.hint {
   position: absolute;
-  top: 24px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
   display: flex;
-  pointer-events: auto;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 10, 18, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: #c8c8e0;
+  white-space: nowrap;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
   user-select: none;
 }
 
-.toolbar {
-  background: rgba(14, 14, 20, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 8px 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  font-family: 'Inter', system-ui, sans-serif;
+.hintSep {
+  color: rgba(255, 255, 255, 0.2);
 }
 
-.instruction {
-  color: #e2e2f0;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.btn {
+.hint kbd {
   background: rgba(124, 110, 245, 0.2);
-  border: 1px solid rgba(124, 110, 245, 0.5);
-  color: #c4b8ff;
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-size: 13px;
+  border: 1px solid rgba(124, 110, 245, 0.4);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #a89ef8;
+}
+
+/* Confirm button — appears after crop is drawn */
+.confirmBtn {
+  pointer-events: all;
+  margin-left: 10px;
+  background: rgba(124, 110, 245, 0.3);
+  border: 1px solid rgba(124, 110, 245, 0.6);
+  border-radius: 20px;
+  color: #e2e2f0;
+  font-size: 12px;
   font-weight: 600;
+  padding: 3px 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: inherit;
+  transition: background 150ms;
+}
+.confirmBtn:hover {
+  background: rgba(124, 110, 245, 0.55);
 }
 
-.btn:hover {
-  background: rgba(124, 110, 245, 0.4);
-}
-
+/* ── Screenshot fills viewport ───────────────────────────────────────────── */
 .cropWrapper {
   width: 100vw;
   height: 100vh;
+  display: block;
 }
 
 .desktopImage {
   width: 100vw;
   height: 100vh;
-  object-fit: fill; /* fill to exact screen dimensions */
+  object-fit: fill;
   display: block;
-}
-
-/* Add custom overlay dimming to react-image-crop */
-:global(.ReactCrop__image) {
-  /* No opacity change here, we dim using pseudo element if needed */
-}
-
-/* Workaround to dim the unselected area since ReactCrop v10 doesn't natively dim the image, it uses crop outlines */
-:global(.ReactCrop) {
-  background: transparent;
+  user-select: none;
+  -webkit-user-drag: none;
 }
