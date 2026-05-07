@@ -29,7 +29,7 @@ export const MODE_PROMPTS: Record<string, string> = {
   friendly:     'Rewrite this in a warm, friendly, and conversational tone.',
   email:        'Write a complete professional email. Include: Subject line, greeting, clear body paragraphs, and a professional closing.',
   continue:     'Continue writing from exactly where this text ends. Match the style, tone, and voice.',
-  answer:       'You are an expert AI assistant. Output the direct, correct solution immediately. Then, provide a concise, relevant step-by-step explanation. Do not use conversational filler.',
+  answer:       'You are an expert AI assistant. Provide a direct, correct solution to the user\'s question or code task. YOU MUST FORMAT YOUR RESPONSE EXACTLY LIKE THIS:\nSOLUTION:\n<your direct solution here>\nEXPLANATION:\n<your step-by-step explanation here>',
 }
 
 // ─── Check if Ollama is running ───────────────────────────────────────────────

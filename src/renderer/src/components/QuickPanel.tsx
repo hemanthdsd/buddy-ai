@@ -108,6 +108,30 @@ const QuickPanel: React.FC = () => {
     if (activeMode) runMode(activeMode)
   }, [activeMode, runMode])
 
+  // ── Split Output Renderer ──────────────────────────────────────────────────
+  const renderOutput = (text: string) => {
+    if (text.includes('EXPLANATION:')) {
+      const parts = text.split('EXPLANATION:')
+      const solution = parts[0].replace('SOLUTION:', '').trim()
+      const explanation = parts[1]?.trim() || ''
+      return (
+        <div className={styles.splitOutput}>
+          <div className={styles.solutionPanel}>
+            <div className={styles.panelLabel}>Solution</div>
+            <pre className={styles.outputText}>{solution}</pre>
+          </div>
+          {explanation && (
+            <div className={styles.explanationPanel}>
+              <div className={styles.panelLabel}>Explanation</div>
+              <pre className={styles.outputText}>{explanation}</pre>
+            </div>
+          )}
+        </div>
+      )
+    }
+    return <pre className={styles.outputText}>{text.replace('SOLUTION:', '').trim()}</pre>
+  }
+
   return (
     <div className={styles.panel}>
 
@@ -162,7 +186,7 @@ const QuickPanel: React.FC = () => {
                   <span>Thinking…</span>
                 </div>
               ) : (
-                <pre className={styles.outputText}>{outputText}</pre>
+                renderOutput(outputText)
               )}
             </div>
 
