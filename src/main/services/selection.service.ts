@@ -141,7 +141,7 @@ function createIconWindow(): BrowserWindow {
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
-    focusable: true,
+    focusable: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,

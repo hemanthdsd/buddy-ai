@@ -24,6 +24,7 @@ function createQuickPanel(): BrowserWindow {
     skipTaskbar: true,
     resizable: false,
     show: false,
+    focusable: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -75,14 +76,13 @@ export function showQuickPanel(text: string, nearX: number, nearY: number): void
 
   if (quickPanelWindow.isVisible()) {
     sendInit()
-    quickPanelWindow.focus()
   } else {
     quickPanelWindow.once('ready-to-show', () => {
-      quickPanelWindow?.show()
+      quickPanelWindow?.showInactive()
       sendInit()
     })
     if (!quickPanelWindow.webContents.isLoading()) {
-      quickPanelWindow.show()
+      quickPanelWindow.showInactive()
       sendInit()
     }
   }
@@ -112,14 +112,12 @@ export function registerQuickPanelIPC(): void {
   // Replace text in the originating app
   ipcMain.handle('qp-replace-text', async (_e, resultText: string) => {
     try {
+      // Focus was never lost, so we just hide the panel and paste immediately
       quickPanelWindow?.hide()
-      await delay(250)
       await replaceWithResult(resultText)
-      await delay(100)
-      quickPanelWindow?.show()
       return { success: true }
     } catch (err) {
-      quickPanelWindow?.show()
+      quickPanelWindow?.showInactive()
       return { success: false, error: String(err) }
     }
   })
