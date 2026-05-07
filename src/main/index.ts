@@ -45,7 +45,6 @@ function createBubbleWindow(): void {
     resizable: false,
     movable: true,
     hasShadow: false,
-    show: false,          // start hidden — show after page loads to avoid white flash
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -55,12 +54,6 @@ function createBubbleWindow(): void {
   })
 
   bubbleWindow.setAlwaysOnTop(true, 'floating')
-
-  // Show bubble once the page has fully loaded (avoids white flash)
-  bubbleWindow.once('ready-to-show', () => {
-    bubbleWindow?.show()
-    bubbleWindow?.setAlwaysOnTop(true, 'floating')
-  })
 
   bubbleWindow.on('close', (event) => {
     event.preventDefault()
@@ -79,6 +72,12 @@ function createBubbleWindow(): void {
       query: { window: 'bubble' }
     })
   }
+
+  // Show the bubble once the page finishes loading
+  bubbleWindow.webContents.once('did-finish-load', () => {
+    bubbleWindow?.show()
+    bubbleWindow?.setAlwaysOnTop(true, 'floating')
+  })
 }
 
 // ─── IPC: Window dragging ─────────────────────────────────────────────────────
