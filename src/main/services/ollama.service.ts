@@ -62,7 +62,7 @@ export async function streamTextProcess(
   const modePrompt = MODE_PROMPTS[modeId] ?? MODE_PROMPTS.improve
   const fullPrompt = `${modePrompt}\n\nText:\n${text}`
 
-  await streamRequest(win, {
+  await streamRequest(win, '/api/generate', {
     model,
     prompt: fullPrompt,
     system: SYSTEM_PROMPT,
@@ -88,13 +88,26 @@ export async function streamTextWithPrefix(
   const modePrompt = MODE_PROMPTS[modeId] ?? MODE_PROMPTS.improve
   const fullPrompt = `${modePrompt}\n\nText:\n${text}`
 
-  await streamRequestPrefixed(win, {
+  await streamRequestPrefixed(win, '/api/generate', {
     model,
     prompt: fullPrompt,
     system: SYSTEM_PROMPT,
     stream: true,
     options: { temperature: 0.7, num_predict: 1024 }
   }, prefix)
+}
+
+export async function streamChatProcess(
+  win: BrowserWindow,
+  messages: Array<{ role: string; content: string; images?: string[] }>,
+  model: string
+): Promise<void> {
+  await streamRequest(win, '/api/chat', {
+    model,
+    messages,
+    stream: true,
+    options: { temperature: 0.5, num_predict: 1024 }
+  })
 }
 
 // ─── Stream screen analysis ───────────────────────────────────────────────────
@@ -109,10 +122,11 @@ export async function streamScreenAnalysis(
   const base64 = imageDataUrl.replace(/^data:image\/[a-z]+;base64,/, '')
 
   const prompt = question.trim() ||
-    'Look at this screenshot carefully. Describe what is happening on the screen, ' +
-    'identify any visible issues or tasks, and suggest how I can help the user.'
+    'Analyze this screen carefully. Identify any questions (normal, mathematical, or coding-based). ' +
+    'If there is ONE clear question or task, provide the solution directly. ' +
+    'If there are MULTIPLE questions, list them clearly, ask me which one you should prioritize, and wait for my instruction.'
 
-  await streamRequest(win, {
+  await streamRequest(win, '/api/generate', {
     model: visionModel,
     prompt,
     images: [base64],
@@ -125,12 +139,13 @@ export async function streamScreenAnalysis(
 // prefix = '' for main panel ('ai-chunk'), 'qp-' for quick panel ('qp-ai-chunk')
 async function streamRequest(
   win: BrowserWindow,
+  endpoint: string,
   body: Record<string, unknown>,
   prefix = ''
 ): Promise<void> {
   try {
     const response = await axios.post(
-      `${OLLAMA_BASE}/api/generate`,
+      `${OLLAMA_BASE}${endpoint}`,
       body,
       {
         responseType: 'stream',
@@ -152,8 +167,10 @@ async function streamRequest(
         if (!line.trim()) continue
         try {
           const json = JSON.parse(line)
-          if (json.response) {
-            win.webContents.send(`${prefix}ai-chunk`, { token: json.response, done: false })
+          // /api/generate uses json.response, /api/chat uses json.message.content
+          const token = json.response ?? json.message?.content
+          if (token !== undefined) {
+            win.webContents.send(`${prefix}ai-chunk`, { token, done: false })
           }
           if (json.done) {
             win.webContents.send(`${prefix}ai-chunk`, { token: '', done: true })

@@ -203,6 +203,11 @@ const AssistantPanel: React.FC = () => {
         setOutputText('')
         setQuestion('')
         setStatus('idle')
+        
+        // Auto-trigger analysis
+        setSelectedMode('vision')
+        setIsLoading(true)
+        window.electronAPI.analyzeScreen(dataUrl, '', visionModel)
       } else {
         setStatus('error')
         setTimeout(() => setStatus('idle'), 2500)
@@ -335,14 +340,24 @@ const AssistantPanel: React.FC = () => {
               <div className={styles.screenshotWrap}>
                 <img src={screenshot} alt="Screen capture" className={styles.screenshot} />
               </div>
-              <textarea
-                className={styles.textarea}
-                value={question}
-                onChange={e => setQuestion(e.target.value)}
-                placeholder="Ask a question about this screenshot… (optional)"
-                rows={2}
-                spellCheck={false}
-              />
+              <div className={styles.chatInputRow}>
+                <textarea
+                  className={styles.textarea}
+                  value={question}
+                  onChange={e => setQuestion(e.target.value)}
+                  placeholder="Reply or ask a question about this screenshot…"
+                  rows={2}
+                  spellCheck={false}
+                />
+                <button
+                  className={`${styles.captureBtn} ${styles.sendBtn}`}
+                  onClick={() => runMode('vision')}
+                  disabled={isLoading || !question.trim()}
+                  style={{ marginTop: '8px' }}
+                >
+                  Send
+                </button>
+              </div>
             </>
           ) : (
             <textarea
@@ -373,23 +388,23 @@ const AssistantPanel: React.FC = () => {
         </section>
 
         {/* ── Mode buttons ────────────────────────────────────────────────── */}
-        <section className={styles.section}>
-          <label className={styles.label}>
-            {screenshot ? '🔍 Analyze screenshot' : 'Choose a mode'}
-          </label>
-          <div className={styles.modesGrid}>
-            {MODES.map(mode => (
-              <button
-                key={mode.id}
-                className={`${styles.modeBtn} ${selectedMode === mode.id ? styles.modeBtnActive : ''}`}
-                onClick={() => runMode(mode.id)}
-                disabled={isLoading}
-              >
-                {mode.label}
-              </button>
-            ))}
-          </div>
-        </section>
+        {!screenshot && (
+          <section className={styles.section}>
+            <label className={styles.label}>Choose a mode</label>
+            <div className={styles.modesGrid}>
+              {MODES.map(mode => (
+                <button
+                  key={mode.id}
+                  className={`${styles.modeBtn} ${selectedMode === mode.id ? styles.modeBtnActive : ''}`}
+                  onClick={() => runMode(mode.id)}
+                  disabled={isLoading}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Output section ──────────────────────────────────────────────── */}
         {(isLoading || outputText) && (
