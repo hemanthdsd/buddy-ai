@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import ReactCrop, { type Crop } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
 import styles from './AssistantPanel.module.css'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,6 +50,7 @@ const AssistantPanel: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const [isLoading, setIsLoading]       = useState(false)
   const [screenshot, setScreenshot]     = useState<string | null>(null)
+  const [crop, setCrop]                 = useState<Crop>()
   const [question, setQuestion]         = useState('')
   const [status, setStatus]             = useState<'idle' | 'capturing' | 'error'>('idle')
 
@@ -66,6 +69,7 @@ const AssistantPanel: React.FC = () => {
   const [installedModels, setInstalledModels] = useState<string[]>([])
 
   const outputRef  = useRef<HTMLDivElement>(null)
+  const imgRef     = useRef<HTMLImageElement>(null)
   // Track current mode for Retry
   const currentModeRef = useRef<string | null>(null)
 
@@ -96,6 +100,7 @@ const AssistantPanel: React.FC = () => {
       setOutputText('')
       setSelectedMode(null)
       setScreenshot(null)
+      setCrop(undefined)
       setQuestion('')
       setStatus('idle')
       setReplaceMsg(null)
@@ -123,6 +128,35 @@ const AssistantPanel: React.FC = () => {
     return () => { cleanChunk(); cleanError() }
   }, [])
 
+  // ── Extract cropped image ──────────────────────────────────────────────────
+  const getCroppedImage = useCallback((): string | null => {
+    if (!screenshot || !imgRef.current) return screenshot
+    if (!crop || !crop.width || !crop.height) return screenshot
+
+    const canvas = document.createElement('canvas')
+    const scaleX = imgRef.current.naturalWidth / imgRef.current.width
+    const scaleY = imgRef.current.naturalHeight / imgRef.current.height
+    canvas.width = crop.width * scaleX
+    canvas.height = crop.height * scaleY
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) return screenshot
+
+    ctx.drawImage(
+      imgRef.current,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width * scaleX,
+      crop.height * scaleY
+    )
+
+    return canvas.toDataURL('image/png')
+  }, [screenshot, crop])
+
   // ── Run AI ────────────────────────────────────────────────────────────────
   const runMode = useCallback((modeId: string) => {
     if (!inputText.trim() && !screenshot) {
@@ -137,11 +171,12 @@ const AssistantPanel: React.FC = () => {
     setReplaceMsg(null)
 
     if (screenshot) {
-      window.electronAPI.analyzeScreen(screenshot, question, visionModel)
+      const finalImage = getCroppedImage() || screenshot
+      window.electronAPI.analyzeScreen(finalImage, question, visionModel)
     } else {
       window.electronAPI.processText(inputText, modeId, model)
     }
-  }, [inputText, screenshot, question, model, visionModel])
+  }, [inputText, screenshot, question, model, visionModel, getCroppedImage])
 
   // ── Retry — re-run the same mode ─────────────────────────────────────────
   const handleRetry = useCallback(() => {
@@ -203,15 +238,11 @@ const AssistantPanel: React.FC = () => {
       const dataUrl = await window.electronAPI.captureScreen()
       if (dataUrl) {
         setScreenshot(dataUrl)
+        setCrop(undefined)
         setInputText('')
         setOutputText('')
         setQuestion('')
         setStatus('idle')
-        
-        // Auto-trigger analysis
-        setSelectedMode('vision')
-        setIsLoading(true)
-        window.electronAPI.analyzeScreen(dataUrl, '', visionModel)
       } else {
         setStatus('error')
         setTimeout(() => setStatus('idle'), 2500)
@@ -225,6 +256,7 @@ const AssistantPanel: React.FC = () => {
   // ── Clear screenshot ──────────────────────────────────────────────────────
   const handleClearScreenshot = useCallback(() => {
     setScreenshot(null)
+    setCrop(undefined)
     setOutputText('')
     setQuestion('')
   }, [])
@@ -376,24 +408,26 @@ const AssistantPanel: React.FC = () => {
           {screenshot ? (
             <>
               <div className={styles.screenshotWrap}>
-                <img src={screenshot} alt="Screen capture" className={styles.screenshot} />
+                <ReactCrop crop={crop} onChange={c => setCrop(c)}>
+                  <img ref={imgRef} src={screenshot} alt="Screen capture" className={styles.screenshot} />
+                </ReactCrop>
               </div>
               <div className={styles.chatInputRow}>
                 <textarea
                   className={styles.textarea}
                   value={question}
                   onChange={e => setQuestion(e.target.value)}
-                  placeholder="Reply or ask a question about this screenshot…"
+                  placeholder="Ask a question, or leave blank to solve what's highlighted…"
                   rows={2}
                   spellCheck={false}
                 />
                 <button
                   className={`${styles.captureBtn} ${styles.sendBtn}`}
                   onClick={() => runMode('vision')}
-                  disabled={isLoading || !question.trim()}
+                  disabled={isLoading}
                   style={{ marginTop: '8px' }}
                 >
-                  Send
+                  Analyze Selection
                 </button>
               </div>
             </>
