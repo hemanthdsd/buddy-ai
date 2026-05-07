@@ -112,9 +112,13 @@ export function registerPanelIPC(): void {
     await delay(150)
 
     try {
+      const primaryDisplay = screen.getPrimaryDisplay()
+      const width = primaryDisplay.size.width * primaryDisplay.scaleFactor
+      const height = primaryDisplay.size.height * primaryDisplay.scaleFactor
+
       const sources = await desktopCapturer.getSources({
         types: ['screen'],
-        thumbnailSize: { width: 1280, height: 720 }
+        thumbnailSize: { width, height }
       })
       const dataUrl = sources[0]?.thumbnail.toDataURL() ?? null
       console.log('[Buddy] Screen captured:', dataUrl ? 'success' : 'no source')
