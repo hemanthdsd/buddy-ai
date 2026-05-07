@@ -22,7 +22,18 @@ Powered by [Ollama](https://ollama.com/), Buddy AI runs completely locally, mean
 - **Build Tool:** Vite + Electron-Vite
 - **AI Engine:** Ollama (Local Models)
 
-## 🚀 Getting Started
+## ⬇️ Download & Install
+
+You can easily download and install the pre-packaged application:
+1. Go to the **[Releases page](https://github.com/hemanthdsd/buddy-ai/releases)** of this repository.
+2. Download the latest `Buddy Setup X.X.X.exe`.
+3. Run the installer to add Buddy to your system!
+
+*(Note: Ensure you have [Ollama](https://ollama.com/) installed to power the AI!)*
+
+---
+
+## 🚀 Getting Started (For Developers)
 
 ### 1. Prerequisites
 
