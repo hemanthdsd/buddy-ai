@@ -35,8 +35,8 @@ const MODES = [
   { id: 'short',        label: '⚡ Make Short'        },
   { id: 'friendly',     label: '😊 Friendly Tone'     },
   { id: 'email',        label: '📧 Write Email'       },
-  { id: 'answer',       label: '💡 Answer / Solve'    },
   { id: 'continue',     label: '▶ Continue'           },
+  { id: 'answer',       label: '💡 Answer / Solve'    },
 ]
 
 // ─── AssistantPanel ───────────────────────────────────────────────────────────
@@ -396,7 +396,7 @@ const AssistantPanel: React.FC = () => {
               {MODES.map(mode => (
                 <button
                   key={mode.id}
-                  className={`${styles.modeBtn} ${selectedMode === mode.id ? styles.modeBtnActive : ''}`}
+                  className={`${styles.modeBtn} ${selectedMode === mode.id ? styles.modeBtnActive : ''} ${mode.id === 'answer' ? styles.answerBtn : ''}`}
                   onClick={() => runMode(mode.id)}
                   disabled={isLoading}
                 >

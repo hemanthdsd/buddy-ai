@@ -160,6 +160,22 @@
 
 .modeEmoji { font-size: 13px; flex-shrink: 0; }
 
+.answerBtn {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+.answerBtn:hover:not(:disabled) {
+  background: rgba(52, 211, 153, 0.22) !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  color: #6ee7b7 !important;
+}
+.answerBtn.modeBtnActive {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.25), rgba(16, 185, 129, 0.2)) !important;
+  border-color: rgba(52, 211, 153, 0.6) !important;
+  color: #a7f3d0 !important;
+}
+
 /* ── Output area ─────────────────────────────────────────────────────────── */
 .outputSection {
   display: flex;

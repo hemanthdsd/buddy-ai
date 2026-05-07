@@ -22,10 +22,10 @@ const QUICK_MODES = [
   { id: 'improve',      emoji: '✨', label: 'Improve'      },
   { id: 'grammar',      emoji: '📝', label: 'Fix Grammar'  },
   { id: 'professional', emoji: '💼', label: 'Professional' },
-  { id: 'answer',       emoji: '💡', label: 'Answer / Solve' },
   { id: 'short',        emoji: '⚡', label: 'Shorter'      },
   { id: 'friendly',     emoji: '😊', label: 'Friendly'     },
   { id: 'email',        emoji: '📧', label: 'Email'        },
+  { id: 'answer',       emoji: '💡', label: 'Answer / Solve' },
 ]
 
 // ─── QuickPanel ───────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ const QuickPanel: React.FC = () => {
           {QUICK_MODES.map(m => (
             <button
               key={m.id}
-              className={`${styles.modeBtn} ${activeMode === m.id ? styles.modeBtnActive : ''}`}
+              className={`${styles.modeBtn} ${activeMode === m.id ? styles.modeBtnActive : ''} ${m.id === 'answer' ? styles.answerBtn : ''}`}
               onClick={() => runMode(m.id)}
               disabled={isLoading}
             >
