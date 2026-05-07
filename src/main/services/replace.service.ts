@@ -1,6 +1,9 @@
 import { clipboard } from 'electron'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { writeFileSync } from 'fs'
+import { join } from 'path'
+import { tmpdir } from 'os'
 
 // ─── Replace Service ──────────────────────────────────────────────────────────
 // Pastes AI-generated text back into whatever app the user was in before.
@@ -32,13 +35,13 @@ export async function replaceWithResult(resultText: string): Promise<void> {
     // so focus is back in the original application.
     await simulateCtrlV()
 
-    // ── 4. Brief wait for paste to settle ────────────────────────────────────
-    await delay(150)
+    // ── 4. Wait for paste to settle ──────────────────────────────────────────
+    await delay(300)
 
     console.log('[Buddy] Replace: done.')
   } finally {
     // ── 5. Always restore the original clipboard ─────────────────────────────
-    await delay(200)   // extra wait before restore — some apps are slow to receive paste
+    await delay(400)   // extra wait before restore — some apps are slow to receive paste
     clipboard.writeText(savedText)
     console.log('[Buddy] Replace: clipboard restored.')
   }
@@ -47,12 +50,11 @@ export async function replaceWithResult(resultText: string): Promise<void> {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function simulateCtrlV(): Promise<void> {
-  const cmd =
-    'powershell -NoProfile -NonInteractive -WindowStyle Hidden -Command ' +
-    '"Add-Type -AssemblyName System.Windows.Forms; ' +
-    "[System.Windows.Forms.SendKeys]::SendWait('^'+'v')\"" 
-
-  await execAsync(cmd, { timeout: 3000 })
+  const vbsPath = join(tmpdir(), 'buddy_paste.vbs')
+  const vbsCode = `set WshShell = WScript.CreateObject("WScript.Shell")\nWScript.Sleep 50\nWshShell.SendKeys "^v"`
+  writeFileSync(vbsPath, vbsCode, 'utf8')
+  
+  await execAsync(`wscript.exe "${vbsPath}"`, { timeout: 3000 })
 }
 
 function delay(ms: number): Promise<void> {
