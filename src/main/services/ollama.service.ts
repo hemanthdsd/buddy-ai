@@ -122,9 +122,12 @@ export async function streamScreenAnalysis(
   const base64 = imageDataUrl.replace(/^data:image\/[a-z]+;base64,/, '')
 
   const prompt = question.trim() ||
-    'Analyze this screen carefully. Identify any questions (normal, mathematical, or coding-based). ' +
-    'If there is ONE clear question or task, provide the solution directly. ' +
-    'If there are MULTIPLE questions, list them clearly, ask me which one you should prioritize, and wait for my instruction.'
+    'Extract and solve the mathematical, coding, or general questions visible on this screen. ' +
+    'CRITICAL RULES:\n' +
+    '1. DO NOT describe the image or what you see (e.g., never say "The image shows...").\n' +
+    '2. ONLY output the direct answers or solutions.\n' +
+    '3. Be extremely concise and to the point.\n' +
+    '4. If there are MULTIPLE distinct questions, list them briefly and ask which to solve first.'
 
   await streamRequest(win, '/api/generate', {
     model: visionModel,
