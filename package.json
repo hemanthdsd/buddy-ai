@@ -38,9 +38,16 @@
       "target": "nsis",
       "icon": "resources/icon.ico"
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Buddy AI"
+    },
     "files": [
-      "dist-electron/**/*",
-      "dist/**/*"
+      "out/**/*",
+      "resources/**/*"
     ]
   }
 }
