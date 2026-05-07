@@ -35,6 +35,7 @@ const MODES = [
   { id: 'short',        label: '⚡ Make Short'        },
   { id: 'friendly',     label: '😊 Friendly Tone'     },
   { id: 'email',        label: '📧 Write Email'       },
+  { id: 'answer',       label: '💡 Answer / Solve'    },
   { id: 'continue',     label: '▶ Continue'           },
 ]
 

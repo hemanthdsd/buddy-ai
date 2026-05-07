@@ -22,6 +22,7 @@ const QUICK_MODES = [
   { id: 'improve',      emoji: '✨', label: 'Improve'      },
   { id: 'grammar',      emoji: '📝', label: 'Fix Grammar'  },
   { id: 'professional', emoji: '💼', label: 'Professional' },
+  { id: 'answer',       emoji: '💡', label: 'Answer / Solve' },
   { id: 'short',        emoji: '⚡', label: 'Shorter'      },
   { id: 'friendly',     emoji: '😊', label: 'Friendly'     },
   { id: 'email',        emoji: '📧', label: 'Email'        },
