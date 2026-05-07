@@ -150,7 +150,7 @@ app.whenReady().then(() => {
   createBubbleWindow()
 
   // ── Phase 3: System tray ──────────────────────────────────────────────────
-  createTray(() => bubbleWindow)
+  createTray(() => bubbleWindow, () => showPanel(''))
 
   // ── Phase 4 + 5: Global shortcut + panel ─────────────────────────────────
   registerPanelIPC()                                       // panel IPC handlers
