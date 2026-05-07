@@ -6,12 +6,13 @@ Powered by [Ollama](https://ollama.com/), Buddy AI runs completely locally, mean
 
 ## 🌟 Key Features
 
-- **System-Wide Quick Actions:** Highlight text in *any* application (browser, Word, Discord) and a floating Buddy ✨ icon will appear. Click it to open the Quick Panel and instantly improve your text.
+- **System-Wide Quick Actions:** Highlight text in *any* application (browser, Word, Discord) using your mouse **or keyboard (`Shift+Arrows` / `Ctrl+A`)** and a floating Buddy ✨ icon will appear instantly.
+- **Answer & Solve Mode:** Highlight a math problem or a coding question, and Buddy will provide a direct solution and a detailed step-by-step explanation, separated into a beautiful split-pane UI.
 - **Smart Text Replacement:** Once the AI generates the improved text, click **⇄ Replace**, and Buddy will automatically paste the result directly back into the application you were originally typing in.
 - **Main Assistant Panel:** Press `Ctrl+Shift+E` from anywhere to open the full Assistant Panel for deeper tasks.
-- **Vision / Screen Analysis:** Capture a screenshot directly from the Assistant Panel and ask questions about your screen using vision models.
+- **High-Res Vision Analysis:** Capture a native-resolution screenshot directly from the Assistant Panel to ask questions or extract coding tasks right from your screen.
 - **Prompt Enhancer Mode:** Write a short, simple idea, and Buddy will expand it into a highly detailed, professional AI prompt.
-- **Multiple Writing Modes:** Improve Text, Fix Grammar, Professional Tone, Make Shorter, Friendly Tone, Write Email, and Continue Writing.
+- **Multiple Writing Modes:** Improve Text, Fix Grammar, Professional Tone, Make Shorter, Friendly Tone, Write Email, Answer / Solve, and Continue Writing.
 - **Unobtrusive UX:** Frameless, glassmorphism UI that feels native to modern Windows without stealing your window focus.
 
 ## 🛠️ Technology Stack
@@ -75,5 +76,5 @@ npm run build:win
 ## 🔧 Architecture Notes
 
 - **IPC Bridges:** Complex, secure IPC handlers manage communication between the React frontend and the Electron Node.js backend.
-- **Mouse Monitor:** Uses a lightweight background PowerShell script to detect drag-and-drop text selections without relying on intrusive native keyloggers.
+- **Input Monitor & Smart Caret Tracking:** Uses a lightweight background PowerShell script to detect both drag-and-drop text selections and keyboard text selections. For keyboard selections, it utilizes Windows APIs (`GetGUIThreadInfo`) to track the exact text caret position and spawn the UI precisely where you are typing, bypassing the need for intrusive native keyloggers.
 - **Non-focusable Windows:** The floating Quick Panels are designed to be explicitly non-focusable by the OS. This allows you to interact with the UI without stealing focus from your active browser or text editor, ensuring smooth `Ctrl+V` replacements.
