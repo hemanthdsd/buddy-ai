@@ -4,12 +4,12 @@
    The transparent 80×80 window canvas. Must have NO background so the OS
    shows whatever is behind the window (other apps, desktop, etc.).        */
 .canvas {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;  /* critical: do not set a background colour */
+  background: transparent;
   overflow: visible;
 }
 
@@ -54,11 +54,11 @@
 
 /* Hover: glow brightens + slight scale */
 .bubble:hover {
-  transform: scale(1.08);
+  transform: scale(1.12);
   box-shadow:
-    0 0 0 1.5px rgba(255, 255, 255, 0.22),
-    0 0 22px 6px rgba(124, 110, 245, 0.75),
-    0 6px 16px rgba(0, 0, 0, 0.5);
+    0 0 0 1.5px rgba(255, 255, 255, 0.28),
+    0 0 28px 10px rgba(124, 110, 245, 0.8),
+    0 8px 20px rgba(0, 0, 0, 0.55);
 }
 
 /* Press: compress slightly */

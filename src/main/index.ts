@@ -34,10 +34,10 @@ function createBubbleWindow(): void {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
 
   bubbleWindow = new BrowserWindow({
-    width: 80,
-    height: 80,
-    x: width - 100,
-    y: height - 160,
+    width: 120,
+    height: 120,
+    x: width - 140,
+    y: height - 180,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
